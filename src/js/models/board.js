@@ -5,8 +5,8 @@ export default class Board {
 	}
 	init() {
 		this.cells = [];
-		this.boadWidth = 15;
-		this.boadHeight = 15;
+		this.boadWidth = 20;
+		this.boadHeight = 20;
 	}
 	create() {
 		for (let x = 0; x < this.boadWidth; x++) {
