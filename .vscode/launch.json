@@ -7,7 +7,8 @@
       "request": "launch",
       "url": "http://127.0.0.1:5500/index.html",
       "webRoot": "${workspaceFolder}",
-      "userDataDir": true
+      "userDataDir": true,
+      "targetTypes": ["page", "worker"]
     },
     {
       "name": "Snake: Launch Edge with Dev Server",
@@ -16,6 +17,7 @@
       "url": "http://127.0.0.1:5500/index.html",
       "webRoot": "${workspaceFolder}",
       "userDataDir": true,
+      "targetTypes": ["page", "worker"],
       "preLaunchTask": "npm: dev"
     }
   ]
