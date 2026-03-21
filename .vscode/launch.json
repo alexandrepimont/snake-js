@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Snake: Launch Edge",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/index.html",
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": true
+    },
+    {
+      "name": "Snake: Launch Edge with Dev Server",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/index.html",
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": true,
+      "preLaunchTask": "npm: dev"
+    }
+  ]
+}
