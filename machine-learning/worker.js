@@ -45,15 +45,15 @@ function preprocessImage(input) {
 loadModel();
 
 self.onmessage = async ({ data }) => {
-    if (data.type !== 'predict') {
-        return;
-    }
+    if (data.type !== 'predict') return;
+    if (!_model) return;
 
     const input = preprocessImage(data.image);
     debugger; // STEP B: did we pass the type check?
-    const {width, height} = data.image
-    debugger; // STEP C: did preprocessing succeed?
-    const inferenceResults = await runInference(input)
+
+    const width = self.innerWidth || 640;
+    const height = self.innerHeight || 360;
+    // const inferenceResults = await runInference(input)
 
     postMessage({
         type: 'prediction',

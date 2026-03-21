@@ -5,7 +5,7 @@
       "name": "Snake: Launch Edge",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/index.html",
+      "url": "http://127.0.0.1:5500",
       "webRoot": "${workspaceFolder}",
       "userDataDir": true,
       "targetTypes": ["page", "worker"]
@@ -14,7 +14,7 @@
       "name": "Snake: Launch Edge with Dev Server",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/index.html",
+      "url": "http://127.0.0.1:5500",
       "webRoot": "${workspaceFolder}",
       "userDataDir": true,
       "targetTypes": ["page", "worker"],

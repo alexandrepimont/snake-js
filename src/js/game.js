@@ -44,6 +44,7 @@ export default class Game {
 	}
 	async preloadImage(path, x = -100, y = -100) {
 		let image = new Image();
+		image.crossOrigin = 'anonymous';
 		await new Promise((resolve, reject) => {
 			image.src = path;
 			image.addEventListener('load', () => {

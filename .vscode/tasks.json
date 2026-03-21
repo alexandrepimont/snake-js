@@ -16,8 +16,8 @@
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Starting up http-server",
-          "endsPattern": "Available on"
+          "beginsPattern": "VITE",
+          "endsPattern": "ready in|Local:"
         }
       }
     }

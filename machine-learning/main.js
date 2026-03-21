@@ -19,20 +19,19 @@ export default async function main(game) {
                 game.stage.aim.setPosition(data.x, data.y);
                 const position = game.stage.aim.getGlobalPosition();
 
-                game.handleClick({
-                    global: position,
-                });
             }
 
         }
 
     };
 
-    setInterval(() => {
+    setInterval(async () => {
+        if (!game?.canvas) return;
+        const bitmap = await createImageBitmap(game.canvas);
         worker.postMessage({
             type: 'predict',
-            score: game?.score ?? 0,
-        });
+            image: bitmap,
+        }, [bitmap]);
     }, 300);
 
     return container;
