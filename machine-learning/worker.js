@@ -3,7 +3,7 @@ import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/+esm';
 const MODEL_PATH = './yolov5n_web_model/model.json';
 const LABELS_PATH = './yolov5n_web_model/labels.json';
 const INPUT_MODEL_DIMENTIONS = 640
-const CLASS_THRESHOLD = 0.4
+const CLASS_THRESHOLD = 0.01
 let _labels = [];
 let _model = null;
 
@@ -22,12 +22,23 @@ async function loadModel() {
 
 async function runInference(tensor) {
     const output = await _model.executeAsync(tensor)
-
     tf.dispose(tensor) // free memory
-
     // caixas, pontuacoes, e classes
     const [boxes, scores, classes] = output.slice(0, 3)
-    return output
+    const [boxesData, scoresData, classesData] = await Promise.all(
+        [
+            boxes.data(),
+            scores.data(),
+            classes.data(),
+        ]
+    )
+    output.forEach(t => tf.dispose(t)) // free memory
+
+    return {
+        boxes: boxesData,
+        scores: scoresData,
+        classes: classesData
+    }
 }
 
 function preprocessImage(input) {
@@ -41,7 +52,39 @@ function preprocessImage(input) {
     });
 }
 
+// funcao geradora, pra cada item
+function   * processPrediction({boxes, scores, classes}, width, height) {
+    for (let index = 0; index < scores.length; index++) {
+        
+        if (scores[index] < CLASS_THRESHOLD) continue
+        
+        const label = _labels[classes[index]]
+        if (label !== 'sports ball') continue
+        
+        let [x1, y1, x2, y2] = boxes.slice(index * 4, (index + 1) * 4)
+        console.log('x1', x1)
+        console.log('y1', y1)
+        console.log('x2', x2)
+        console.log('y2', y2)
+        console.log('class', _labels[classes[index]])
 
+        x1 = x1 * width
+        y1 = y1 * height
+        x2 = x2 * width
+        y2 = y2 * height
+        const boxWidth = x2 - x1
+        const boxHeight = y2 - y1
+
+        const centerX = x1 + boxWidth / 2
+        const centerY = y1 + boxHeight / 2
+
+        yield {
+            x: centerX,
+            y: centerY,
+            score: (scores[index] * 100).toFixed(2)
+        }
+    }
+}
 loadModel();
 
 self.onmessage = async ({ data }) => {
@@ -49,18 +92,17 @@ self.onmessage = async ({ data }) => {
     if (!_model) return;
 
     const input = preprocessImage(data.image);
-    debugger; // STEP B: did we pass the type check?
-
+    const inferenceResults = await runInference(input)
+    ; // STEP B: did we pass the type check?
     const width = self.innerWidth || 640;
     const height = self.innerHeight || 360;
+
     // const inferenceResults = await runInference(input)
 
-    postMessage({
-        type: 'prediction',
-        x: 2 * width,
-        y: 2 * height,
-        score: data.score ?? 0,
-    });
-
-    input.dispose();
+    for (const prediction of processPrediction(inferenceResults, width, height)) {
+        postMessage({
+            type: 'prediction',
+            ...prediction
+        });
+    }
 };
