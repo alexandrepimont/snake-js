@@ -53,35 +53,37 @@ function preprocessImage(input) {
 }
 
 // funcao geradora, pra cada item
-function   * processPrediction({boxes, scores, classes}, width, height) {
+function   * processPrediction({boxes, scores, classes}, width, height, image) {
     for (let index = 0; index < scores.length; index++) {
-        
         if (scores[index] < CLASS_THRESHOLD) continue
+        const canvas = new OffscreenCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0);
         
         const label = _labels[classes[index]]
         if (label !== 'sports ball') continue
         
         let [x1, y1, x2, y2] = boxes.slice(index * 4, (index + 1) * 4)
-        console.log('x1', x1)
-        console.log('y1', y1)
-        console.log('x2', x2)
-        console.log('y2', y2)
-        console.log('class', _labels[classes[index]])
-
+        
+        
         x1 = x1 * width
         y1 = y1 * height
         x2 = x2 * width
         y2 = y2 * height
         const boxWidth = x2 - x1
         const boxHeight = y2 - y1
-
+        
         const centerX = x1 + boxWidth / 2
         const centerY = y1 + boxHeight / 2
 
+        const pixel = ctx.getImageData(centerX, centerY, 1, 1).data;
+        const [r, g, b] = pixel;
+        const isDark = (r + g + b) < 100;
+        
         yield {
             x: centerX,
             y: centerY,
-            score: (scores[index] * 100).toFixed(2)
+            label: isDark ? 'bomb' : 'food',
         }
     }
 }
@@ -94,12 +96,12 @@ self.onmessage = async ({ data }) => {
     const input = preprocessImage(data.image);
     const inferenceResults = await runInference(input)
     ; // STEP B: did we pass the type check?
-    const width = self.innerWidth || 640;
-    const height = self.innerHeight || 360;
+    const width = data.width;
+    const height = data.height;
 
     // const inferenceResults = await runInference(input)
 
-    for (const prediction of processPrediction(inferenceResults, width, height)) {
+    for (const prediction of processPrediction(inferenceResults, width, height, data.image)) {
         postMessage({
             type: 'prediction',
             ...prediction
