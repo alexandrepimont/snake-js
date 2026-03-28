@@ -50,7 +50,7 @@ export default async function main(game) {
                 { dir: 'Left',  x: snakeBody.head.x - 1, y: snakeBody.head.y,     dx: -1, dy: 0,  deg: 270 },
                 { dir: 'Right', x: snakeBody.head.x + 1, y: snakeBody.head.y,     dx: 1,  dy: 0,  deg: 90 }
             ];
-            console.log('moves:', moves);
+            console.log('snake:', game.snakeController);
             console.log('head:', snakeBody.head);
             console.log('body:', snakeBody.body);
             // console.log('Current snake head position:', snakeBody.head.x, snakeBody.head.y);
@@ -63,7 +63,7 @@ export default async function main(game) {
 
             const safeMoves = moves.filter(move => {
                 // Rule A: Walls (0-19)
-                if (move.x <= 0 || move.x > 19 || move.y <= 0 || move.y > 19) return false;
+                if (move.x < 0 || move.x > 19 || move.y < 0 || move.y > 19) return false;
 
                 // Rule B: Body
                 const hitsBody = snakeBody.body.some(seg => seg.x === move.x && seg.y === move.y);
@@ -76,6 +76,20 @@ export default async function main(game) {
                 return true;
             });
             console.log('Safe moves available:', safeMoves);
+            if (safeMoves.length === 0) return; // No safe moves!
+
+            // Simple heuristic: Move towards the food if it's safe, otherwise pick a random safe move
+            const moveTowardsFood = safeMoves.find(move => {
+                const currentDistance = Math.abs(snakeBody.head.x - lastFoodPos.x) + Math.abs(snakeBody.head.y - lastFoodPos.y);
+                const newDistance = Math.abs(move.x - lastFoodPos.x) + Math.abs(move.y - lastFoodPos.y);
+                return newDistance < currentDistance;
+            });
+            const chosenMove = moveTowardsFood || safeMoves[Math.floor(Math.random() * safeMoves.length)];
+            console.log('Chosen move:', chosenMove.dir);
+            game.snakeController.degree = chosenMove.deg;
+            game.snakeController.deltaX = chosenMove.dx;
+            game.snakeController.deltaY = chosenMove.dy;
+
             // if (safeMoves.length === 0) return; // No safe moves!
 
         };
@@ -92,7 +106,7 @@ export default async function main(game) {
             height: game.canvas.height,
             image: bitmap,
         }, [bitmap]);
-    }, 600);
+    }, 300);
 
     return container;
 }
