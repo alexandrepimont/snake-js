@@ -78,7 +78,7 @@ function   * processPrediction({boxes, scores, classes}, width, height, image) {
 
         const pixel = ctx.getImageData(centerX, centerY, 1, 1).data;
         const [r, g, b] = pixel;
-        const isDark = (r + g + b) < 100;
+        const isDark = r < 140 && g < 140 && b < 140; // Simple threshold to determine if it's a bomb (dark) or food (bright)
         
         yield {
             x: centerX,
