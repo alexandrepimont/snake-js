@@ -16,19 +16,26 @@ export function buildLayout() {
     scoreText.style.fontSize = '16px';
 
     const predictionsText = document.createElement('div');
-    predictionsText.textContent = 'Predictions: n/a';
+    predictionsText.textContent = '🍎 Apple prediction: n/a';
+    const bombText = document.createElement('div');
+    bombText.textContent = '💣 Bomb prediction: n/a';
     predictionsText.style.fontSize = '13px';
+    bombText.style.fontSize = '13px';
 
     hud.appendChild(scoreText);
     hud.appendChild(predictionsText);
+    hud.appendChild(bombText);
     document.body.appendChild(hud);
 
     function updateHUD(data) {
         const score = Number.isFinite(data.score) ? data.score : 0;
-        const x = Number.isFinite(data.x) ? Math.round(data.x) : 'n/a';
-        const y = Number.isFinite(data.y) ? Math.round(data.y) : 'n/a';
+        const appleX = Number.isFinite(data.appleX) ? Math.round(data.appleX) : 'n/a';
+        const appleY = Number.isFinite(data.appleY) ? Math.round(data.appleY) : 'n/a';
+        const bombX = Number.isFinite(data.bombX) ? Math.round(data.bombX) : 'n/a';
+        const bombY = Number.isFinite(data.bombY) ? Math.round(data.bombY) : 'n/a';
         scoreText.textContent = `Score: ${score}`;
-        predictionsText.textContent = `Predictions: (${x}, ${y})`;
+        predictionsText.textContent = `🍎 Apple prediction: (${appleX}, ${appleY})`;
+        bombText.textContent = `💣 Bomb prediction: (${bombX}, ${bombY})`;
     }
 
     return {

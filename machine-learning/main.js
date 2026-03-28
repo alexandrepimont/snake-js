@@ -90,6 +90,7 @@ export default async function main(game) {
             game.snakeController.deltaX = chosenMove.dx;
             game.snakeController.deltaY = chosenMove.dy;
 
+            container.updateHUD({ score: game.score, appleX: lastFoodPos.x, appleY: lastFoodPos.y, bombX: lastBombPos.x, bombY: lastBombPos.y });
             // if (safeMoves.length === 0) return; // No safe moves!
 
         };
