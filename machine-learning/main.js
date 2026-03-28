@@ -37,11 +37,12 @@ export default async function main(game) {
         if (data.type === 'prediction') {
             const bc = game.boardController;
             if (!bc.cellWidth) return;
-            const boardX = Math.max(0, Math.min(19, Math.floor((data.x - bc.offsetX) / bc.cellWidth))) + 1;
-            const boardY = Math.max(0, Math.min(19, Math.floor((data.y - bc.offsetY) / bc.cellheight))) + 1;
+            const boardX = Math.max(0, Math.min(19, Math.floor((data.x - bc.offsetX) / bc.cellWidth)));
+            const boardY = Math.max(0, Math.min(19, Math.floor((data.y - bc.offsetY) / bc.cellheight)));
             if (data.label === 'bomb') lastBombPos = { x: boardX, y: boardY };
             if (data.label === 'food') lastFoodPos = { x: boardX, y: boardY };
-            console.log(`Prediction: ${data.label} at board (${boardX}, ${boardY})`);
+            console.log(`predicted bomb at board coordinates:`, lastBombPos.x, lastBombPos.y);
+            console.log(`predicted food at board coordinates:`, lastFoodPos.x, lastFoodPos.y);
             const snakeBody = getSnakeBody(game.snakeController);
             const moves = [
                 { dir: 'Up',    x: snakeBody.head.x,     y: snakeBody.head.y - 1, dx: 0,  dy: -1, deg: 0 },
@@ -59,16 +60,10 @@ export default async function main(game) {
             //         console.log(`Current snake body position ${i}:`, snakeBody.body[i].x, snakeBody.body[i].y);
             //     }
             // }
-            console.log(game.snakeController);
-            if (data.label === 'bomb') {
-                const bomb = { x: boardX, y: boardY };
-            }
-            if (data.label === 'food') {
-                const food = { x: boardX, y: boardY };
-            }
+
             const safeMoves = moves.filter(move => {
                 // Rule A: Walls (0-19)
-                if (move.x <= 0 || move.x >= 19 || move.y <= 0 || move.y >= 19) return false;
+                if (move.x <= 0 || move.x > 19 || move.y <= 0 || move.y > 19) return false;
 
                 // Rule B: Body
                 const hitsBody = snakeBody.body.some(seg => seg.x === move.x && seg.y === move.y);
